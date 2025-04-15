@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Word Group Puzzle</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Word Group Puzzle</h1>
+    <button onclick="loadPuzzle()">Generate Puzzle</button>
+    <div id="word-grid"></div>
+    <button onclick="revealAnswers()">Reveal Answers</button>
+    <div id="answers" style="display:none;"></div>
+
+    <script>
+        let puzzleData = null;
+
+        async function loadPuzzle() {
+            const res = await fetch('/generate');
+            puzzleData = await res.json();
+
+            const grid = document.getElementById('word-grid');
+            grid.innerHTML = '';
+            puzzleData.words.forEach(word => {
+                const div = document.createElement('div');
+                div.className = 'word';
+                div.textContent = word;
+                grid.appendChild(div);
+            });
+
+            document.getElementById('answers').style.display = 'none';
+        }
+
+        function revealAnswers() {
+            const ans = document.getElementById('answers');
+            ans.innerHTML = '<h2>Answers</h2>';
+            puzzleData.groups.forEach(group => {
+                ans.innerHTML += `<p><strong>${group.theme}:</strong> ${group.words.join(', ')}</p>`;
+            });
+            ans.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
